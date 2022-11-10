@@ -69,8 +69,8 @@ async function run() {
         app.get('/review', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
             console.log(decoded);
-            if(decoded.email !== req.query.email){
-                res.status(403).send({message:'unauthorized access'})
+            if (decoded.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
 
             }
 
@@ -91,12 +91,28 @@ async function run() {
             const result = await reviewCollection.deleteOne(query)
             res.send(result)
         })
-        
+
         app.get('/review/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) }
             const result = await reviewCollection.findOne(query)
             res.send(result)
+        })
+        // dataUpdate system..
+        app.put('/review/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const user = req.body;
+            const option = { upsert: true };
+            const updateUser = {
+                $set: {
+                    name: user.name
+                }
+            }
+            const result = await reviewCollection.updateOne(filter, updateUser, option);
+            res.send(result)
+
+
         })
 
     }
